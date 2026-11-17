@@ -1,0 +1,50 @@
+---
+- name: Install Python runtime
+  apt:
+    name:
+      - python3
+      - python3-venv
+    state: present
+    update_cache: yes
+
+- name: Create application directory
+  file:
+    path: "{{ app_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy application build artifact
+  copy:
+    src: "{{ playbook_dir }}/../hostel-management-build.tar.gz"
+    dest: /tmp/hostel-management-build.tar.gz
+    mode: '0644'
+
+- name: Extract application artifact
+  unarchive:
+    src: /tmp/hostel-management-build.tar.gz
+    dest: "{{ app_dir }}"
+    remote_src: yes
+
+- name: Create Python virtual environment
+  command:
+    cmd: python3 -m venv "{{ app_dir }}/venv"
+    creates: "{{ app_dir }}/venv/bin/python"
+
+- name: Install application dependencies
+  pip:
+    requirements: "{{ app_dir }}/requirements.txt"
+    virtualenv: "{{ app_dir }}/venv"
+
+- name: Configure application service
+  template:
+    src: hostel.service.j2
+    dest: "/etc/systemd/system/{{ service_name }}.service"
+    mode: '0644'
+  notify: Restart hostel service
+
+- name: Enable and start hostel service
+  systemd:
+    name: "{{ service_name }}"
+    enabled: yes
+    state: started
+    daemon_reload: yes

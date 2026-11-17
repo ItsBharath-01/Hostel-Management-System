@@ -1,0 +1,7 @@
+---
+- name: Deploy Hostel Management Application
+  hosts: hostel
+  become: true
+
+  roles:
+    - hostel_app

@@ -1,0 +1,6 @@
+---
+app_name: hostel-management-system
+app_dir: /opt/hostel-management-system
+app_port: 5000
+service_name: hostel-management
+app_user: bharath

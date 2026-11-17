@@ -1,0 +1,12 @@
+[Unit]
+Description=Hostel Management Flask Application
+After=network.target
+
+[Service]
+User={{ app_user }}
+WorkingDirectory={{ app_dir }}
+ExecStart={{ app_dir }}/venv/bin/python run.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

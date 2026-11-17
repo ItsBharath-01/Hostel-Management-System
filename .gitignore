@@ -3,3 +3,8 @@ __pycache__/
 .pytest_cache/
 *.pyc
 .env
+
+# Generated build artifacts and downloaded tools
+*.tar.gz
+*.deb
+kubectl
