@@ -45,3 +45,11 @@ def test_register_student(client):
 def test_missing_student_name(client):
     response = client.post("/students", json={})
     assert response.status_code == 400
+
+
+def test_room_numbers(client):
+    response = client.get("/rooms")
+    room_list = response.json["rooms"]
+
+    assert room_list[0]["room_id"] == 101
+    assert room_list[-1]["room_id"] == 150
