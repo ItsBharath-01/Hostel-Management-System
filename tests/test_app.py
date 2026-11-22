@@ -53,3 +53,43 @@ def test_room_numbers(client):
 
     assert room_list[0]["room_id"] == 101
     assert room_list[-1]["room_id"] == 150
+
+def test_hostel_statistics_empty(client):
+    response = client.get("/hostel/statistics")
+
+    assert response.status_code == 200
+    assert response.json["total_rooms"] == 50
+    assert response.json["occupied_rooms"] == 0
+    assert response.json["available_rooms"] == 50
+    assert response.json["total_beds"] == 100
+    assert response.json["occupied_beds"] == 0
+    assert response.json["available_beds"] == 100
+    assert response.json["occupancy_percentage"] == 0
+
+
+def test_hostel_statistics_after_allocation(client):
+    student_response = client.post(
+        "/students",
+        json={"name": "Bharath"}
+    )
+
+    student_id = student_response.json["student"]["student_id"]
+
+    allocation_response = client.post(
+        "/allocate",
+        json={
+            "student_id": student_id,
+            "room_id": 101
+        }
+    )
+
+    assert allocation_response.status_code == 200
+
+    response = client.get("/hostel/statistics")
+
+    assert response.status_code == 200
+    assert response.json["occupied_rooms"] == 1
+    assert response.json["available_rooms"] == 49
+    assert response.json["occupied_beds"] == 1
+    assert response.json["available_beds"] == 99
+    assert response.json["occupancy_percentage"] == 1.0

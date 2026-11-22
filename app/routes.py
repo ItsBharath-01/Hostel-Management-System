@@ -103,3 +103,36 @@ def register_routes(app):
             "student_id": student_id,
             "room_id": room_id
         }, 200
+
+    @app.route("/hostel/statistics", methods=["GET"])
+    def hostel_statistics():
+        total_rooms = len(rooms)
+
+        total_beds = sum(room["capacity"] for room in rooms)
+
+        occupied_beds = sum(
+            len(room["students"]) for room in rooms
+        )
+
+        available_beds = total_beds - occupied_beds
+
+        occupied_rooms = sum(
+            1 for room in rooms if len(room["students"]) > 0
+        )
+
+        available_rooms = total_rooms - occupied_rooms
+
+        occupancy_percentage = (
+            round((occupied_beds / total_beds) * 100, 2)
+            if total_beds > 0 else 0
+        )
+
+        return {
+            "total_rooms": total_rooms,
+            "occupied_rooms": occupied_rooms,
+            "available_rooms": available_rooms,
+            "total_beds": total_beds,
+            "occupied_beds": occupied_beds,
+            "available_beds": available_beds,
+            "occupancy_percentage": occupancy_percentage
+        }, 200
